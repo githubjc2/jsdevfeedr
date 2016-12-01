@@ -1,0 +1,32 @@
+body {
+    padding-top: 50px;
+}
+
+#main {
+    padding: 40px 15px;
+}
+
+.article-snippet {
+    padding-bottom: 36px;
+    min-height: 420px;
+}
+
+.article-snippet p {
+    display: none;
+}
+
+.article-snippet img {
+    border: 1px solid #ddd;
+}
+
+.article-snippet .fullArticle {
+    display: none;
+}
+
+.modal-body p {
+    margin-top: 12px;
+}
+
+.newsSource {
+	cursor: pointer;
+}
