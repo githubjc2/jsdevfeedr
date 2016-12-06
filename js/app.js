@@ -1,4 +1,4 @@
-// This script connects to the newsapi.org API, pulls 2 articles from each specified news source, then displays an article list on the Feedr Readr.
+// This script connects to the newsapi.org API, pulls articles from each specified news source, then displays an article list on the Feedr Readr.
 
 // newsapi.org credentials
 var newsAPIEndpoint = 'https://newsapi.org/v1/articles';
@@ -9,9 +9,9 @@ var newsSourceArray = [];
 
 // create news source object
 var newsSourceObj =  function (newsSourceTitle, newsSource) {
-    this.newsSourceTitle = newsSourceTitle;
-    this.newsSource = newsSource;
-    newsSourceArray.push(this);
+	this.newsSourceTitle = newsSourceTitle;
+	this.newsSource = newsSource;
+	newsSourceArray.push(this);
 };
 
 // news source #1 - Tech Crunch
@@ -25,74 +25,82 @@ var newsSource3 = new newsSourceObj ('the next web', '?source=the-next-web');
 
 //populate News Sources drop-down menu from news sources array
 $(function() {
-    for (k = 0; k < newsSourceArray.length; k++) {
-        var newsSourceLi = $('<li class="newsSource">');
-        var newsSourceA = $('<a>');
-        $(newsSourceLi).append(newsSourceA);
-        $(newsSourceA).text(newsSourceArray[k].newsSourceTitle);
-        $("#newsSourcesMenu").append(newsSourceLi);
-    }
+	for (k = 0; k < newsSourceArray.length; k++) {
+		var newsSourceLi = $('<li class="newsSource">');
+		var newsSourceA = $('<a>');
+		$(newsSourceLi).append(newsSourceA);
+		$(newsSourceA).text(newsSourceArray[k].newsSourceTitle);
+		$("#newsSourcesMenu").append(newsSourceLi);
+	}
 });
 
 // set the articles list when a news source in the drop-down menu is clicked on
 $(document).on("click", ".newsSource", function() {
-    var newsSourceIndex = $(".newsSource").index(this);
-    getNewsAPIData (newsSourceIndex);
+	var newsSourceIndex = $(".newsSource").index(this);
+	getNewsAPIData (newsSourceIndex);
 });
 
 // get articles from the news sources via the newsapi.org API
 function getNewsAPIData (newsSourceIndex) {
 
-    // clear #recent_articles
-    $("#recent_articles").empty();
+	// clear #recent_articles
+	$("#recent_articles").empty();
 
-    // set the number of news sources
-    if (newsSourceIndex == undefined) {
-        numberNewsSources = newsSourceArray.length;
-    } else {
-        numberNewsSources = 1;
-    }
+	// set the number of news sources
+	if (newsSourceIndex == undefined) {
+		numberNewsSources = newsSourceArray.length;
+	} else {
+		numberNewsSources = 1;
+	}
 
-    // run this loop for each news source
-    for (var i = 0; i < numberNewsSources; i++) {
+	// run this loop for each news source
+	for (var i = 0; i < numberNewsSources; i++) {
 
-        // construct API endpoint
-        if (newsSourceIndex == undefined) {
-            var newsAPIUrl = newsAPIEndpoint + newsSourceArray[i].newsSource + newsAPIKey;
-        } else {
-            var newsAPIUrl = newsAPIEndpoint + newsSourceArray[newsSourceIndex].newsSource + newsAPIKey;
-        }
+		// construct API endpoint
+		if (newsSourceIndex == undefined) {
+			var newsAPIUrl = newsAPIEndpoint + newsSourceArray[i].newsSource + newsAPIKey;
+			getArticles(i);
+		} else {
+			var newsAPIUrl = newsAPIEndpoint + newsSourceArray[newsSourceIndex].newsSource + newsAPIKey;
+			getArticles(newsSourceIndex);
+		}
 
-        // API call
-        $.get(newsAPIUrl, function (newsResults) {
-            // Check the data back from the API
-            console.log(newsResults);
+		function getArticles(outerCount){
 
-            // number of articles per source
-            var articleCount = 2;
+			// API call
+			$.get(newsAPIUrl, function (newsResults) {
 
-            // get 2 articles, add them as objects to the news article array and build them in the DOM
-            for (j = 0; j < articleCount; j++) {
+				// Check the data back from the API
+				console.log(newsResults);
 
-                // current article in the article array
-                var currentArticle = newsResults.articles[j];
+				// number of articles per source
+				var articleCount = 2;
 
-                var domArticle = $(
+				// get 2 articles, add them as objects to the news article array and build them in the DOM
+				for (j = 0; j < articleCount; j++) {
 
-                    '   <div class="col-sm-4 article-snippet">' +
-                    '       <h6>' + newsSourceArray[0].newsSourceTitle + '</h6>' +
-                    '       <img class="img-responsive" src="' + currentArticle.urlToImage +'" alt="' + currentArticle.description + '">' +
-                    '       <h3>' + currentArticle.title + '</h3>' +
-                    '       <p>' + currentArticle.description + '</p>' +
-                    '       <button type="button" class="btn btn-primary btn-modal" data-toggle="modal" data-target="#articleModal">Read more</button>' +
-                    '       <a class="btn btn-primary btn-modal fullArticle" href="' + currentArticle.url + '" target="_blank">Full article</a>' +
-                    '   </div>'
-                );
+					console.log(outerCount);
 
-                $("#recent_articles").append(domArticle);
-            }
-        });
-    }
+					// current article in the article array
+					var currentArticle = newsResults.articles[j];
+
+					var domArticle = $(
+
+						'   <div class="col-sm-4 article-snippet" id="' + outerCount + "_" + j + '">' +
+						'	   <h6>' + newsSourceArray[outerCount].newsSourceTitle + '</h6>' +
+						'	   <img class="img-responsive" src="' + currentArticle.urlToImage +'" alt="' + currentArticle.description + '">' +
+						'	   <h3>' + currentArticle.title + '</h3>' +
+						'	   <p>' + currentArticle.description + '</p>' +
+						'	   <button type="button" class="btn btn-primary btn-modal" data-toggle="modal" data-target="#articleModal">Read more</button>' +
+						'	   <a class="btn btn-primary btn-modal fullArticle" href="' + currentArticle.url + '" target="_blank">Full article</a>' +
+						'   </div>'
+					);
+
+					$("#recent_articles").append(domArticle);
+				}
+			}); 
+		}
+	}
 };
 
 // initialize page with all news sources
@@ -100,19 +108,21 @@ getNewsAPIData ();
 
 // open article info modal when "Read more" button is clicked
 function articleModal (selector) {
-    var articleModalLabel = $(selector).siblings('h3').clone();
-    var articleImage = $(selector).siblings('img').clone();
-    var articleDescription = $(selector).siblings('p').clone();
-    var articleFullButton = $(selector).siblings('a.fullArticle').clone();
 
-    $( "#articleModalLabel" ).replaceWith(articleModalLabel);
-    $( "#articleImage" ).replaceWith(articleImage);
-    $( "#articleDescription" ).replaceWith(articleDescription);
-    $( "#fullArticle" ).replaceWith(articleFullButton);
+	var articleModalLabel = $(selector).parent().find('h3').clone();
+	var articleImage = $(selector).parent().find('img').clone();
+	var articleDescription = $(selector).parent().find('p').clone();
+	var articleFullButton = $(selector).parent().find('button').clone();
+
+	// updated these lines to use '.html' instead or '.replaceWith' - when I did replace, I lost the ids I was targeting!
+	$( "#articleModalLabel" ).html(articleModalLabel);
+	$( "#articleImage" ).html(articleImage);
+	$( "#articleDescription" ).html(articleDescription);
+	$( "#fullArticle" ).html(articleFullButton);
 }
 
 $(document).on("click", ".btn-modal", function() {
 
-    articleModal(this);
-    console.log('Button clicked.');
+	articleModal(this);
+	console.log('Button clicked.');
 });
