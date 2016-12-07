@@ -122,7 +122,12 @@ function articleModal (selector) {
 }
 
 $(document).on("click", ".btn-modal", function() {
-
 	articleModal(this);
+});
+
+// close modal when Full Article button is clicked
+
+$(document).on("click", ".fullArticle", function() {
+	$('#articleModal').modal('hide');
 	console.log('Button clicked.');
 });
