@@ -112,7 +112,7 @@ function articleModal (selector) {
 	var articleModalLabel = $(selector).parent().find('h3').clone();
 	var articleImage = $(selector).parent().find('img').clone();
 	var articleDescription = $(selector).parent().find('p').clone();
-	var articleFullButton = $(selector).parent().find('button').clone();
+	var articleFullButton = $(selector).parent().find('a').clone();
 
 	// updated these lines to use '.html' instead or '.replaceWith' - when I did replace, I lost the ids I was targeting!
 	$( "#articleModalLabel" ).html(articleModalLabel);
